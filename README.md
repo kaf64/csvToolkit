@@ -1,21 +1,16 @@
-# scrapWiki
-Simple project to show information from wikipedia in window app.
-## Details
-Project uses requests to connect to page, BeautifulSoup to get the information and tkinter to present this in window.
-For now, program present two articles: "on this day" and "featured article" from english wikipedia main page.
+# csvToolkit
+Simple project to handle and present csv (comma separate values) files.
+## Features
+For now, program offers load and preview csv files.
 ## Depencencies (libraries)
 Below each name of library is shown installation command using package installer for Python (pip):
-- [BeautifulSoup](https://beautiful-soup-4.readthedocs.io/en/latest/)
-``` bash
-pip install beautifulsoup4
-```
 - [tkinter](https://docs.python.org/3/library/tkinter.html)
 ```bash
 pip install tk
 ```
-- [requests](https://docs.python-requests.org/en/master/index.html)
-```bash
-pip install requests
-```
+## Usage
+1. Make sure that delimiter character is correct to particural file.  
+2. Click "open csv file" button and select csv file to open. After a while, readed lines shoud be visible in treeview.
+3. To see specific item (row), select record and click "Show/edit item" button.
 ## License
 Project is under [MIT License](LICENSE.md).
