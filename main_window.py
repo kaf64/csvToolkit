@@ -23,14 +23,14 @@ class MainWindow(tk.Frame):
 
     def init_widgets(self) -> None:
         self.delimiter_frame = tk.Frame(self.parent)
-        self.button_load = tk.Button(self.parent, command=self.open_file_dialog, text='open csv file')
+        self.button_load = tk.Button(self.parent, command=self.open_file_dialog, text='Open csv file')
         self.delimiter_label = ttk.Label(self.delimiter_frame, text='delimiter character:')
         self.delimiter_entry = ttk.Entry(self.delimiter_frame, width=1)
         self.delimiter_entry.insert('end', self.reader.get_delimiter())
         self.treeview = ttk.Treeview(self.parent, show='headings')
         self.btn_frame = tk.Frame(self.parent)
         self.btn_show = tk.Button(self.btn_frame, command=lambda: self.show_item(None), text='Show/edit item')
-        self.btn_save = tk.Button(self.btn_frame, command=self.save_data, text='save file')
+        self.btn_save = tk.Button(self.btn_frame, command=self.save_data, text='Save file')
         self.progress_label = ttk.Label(self.parent, text='')
 
         # add scrollbar to treeview (horizontal and vertical)
@@ -58,7 +58,7 @@ class MainWindow(tk.Frame):
         self.treeview_scrollbar_vertical.grid(row=1, column=2, sticky='ns')
         self.treeview_scrollbar_horizontal.grid(row=2, column=0, columnspan=2, sticky='we')
         self.btn_frame.grid(row=3, column=0, columnspan=2, sticky='we')
-        self.btn_show.grid(row=0, column=0, sticky='w')
+        self.btn_show.grid(row=0, column=0, padx=10, sticky='w')
         self.btn_save.grid(row=0, column=1, sticky='w')
         self.progress_label.grid(row=4, column=0, sticky='w')
         # configure columns
