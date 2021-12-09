@@ -112,6 +112,9 @@ class EditWindow(tk.Toplevel):
         if self.is_content_changed is False:
             self.is_content_changed = True
 
+    def get_is_content_changed(self):
+        return self.is_content_changed
+
     def reset_changes(self):
         if self.is_content_changed is True:
             for key, value in self.content.items():

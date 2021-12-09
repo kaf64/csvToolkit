@@ -99,16 +99,18 @@ class MainWindow(tk.Frame):
             self.edit_window.protocol("WM_DELETE_WINDOW", lambda: self.exit_dialog())
 
     def exit_dialog(self):
-        message = 'Do you want save changes before close?'
-        user_decision = tk.messagebox.askyesnocancel(parent=self.edit_window, title='close', message=message)
-        if user_decision is None:
-            return
-        elif user_decision is True:
-            new_values_list = self.edit_window.get_values()
-            iid = self.edit_window.get_iid()
-            self.update_item(self.data[int(iid)], new_values_list, iid)
-        self.edit_window.destroy()
-        self.edit_window = None
+        is_changed = self.edit_window.get_is_content_changed()
+        if is_changed:
+            message = 'Do you want save changes before close?'
+            user_decision = tk.messagebox.askyesnocancel(parent=self.edit_window, title='close', message=message)
+            if user_decision is None:
+                return
+            elif user_decision is True:
+                new_values_list = self.edit_window.get_values()
+                iid = self.edit_window.get_iid()
+                self.update_item(self.data[int(iid)], new_values_list, iid)
+            self.edit_window.destroy()
+            self.edit_window = None
 
     def update_item(self, local_values, new_values, index):
         for key, val in new_values.items():
