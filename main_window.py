@@ -22,12 +22,17 @@ class MainWindow(tk.Frame):
         self.parent.state("zoomed")
 
     def init_widgets(self) -> None:
-        self.delimiter_frame = tk.Frame(self.parent)
         self.button_load = tk.Button(self.parent, command=self.open_file_dialog, text='Open csv file')
+        # init delimiter frame and widgets
+        self.delimiter_frame = tk.Frame(self.parent)
         self.delimiter_label = ttk.Label(self.delimiter_frame, text='delimiter character:')
         self.delimiter_entry = ttk.Entry(self.delimiter_frame, width=1)
+        # init notebook widgets and frames
+        self.notebook = ttk.Notebook(self.parent)
+        self.frame_preview = ttk.Frame(self.notebook)
+        self.notebook.add(self.frame_preview, text='Preview')
         self.delimiter_entry.insert('end', self.reader.get_delimiter())
-        self.treeview = ttk.Treeview(self.parent, show='headings')
+        self.treeview = ttk.Treeview(self.frame_preview, show='headings')
         self.btn_frame = tk.Frame(self.parent)
         self.btn_show = tk.Button(self.btn_frame, command=lambda: self.show_item(None), text='Show/edit item')
         self.btn_save = tk.Button(self.btn_frame, command=self.save_data, text='Save file')
@@ -53,7 +58,8 @@ class MainWindow(tk.Frame):
         self.delimiter_frame.grid(row=0, column=0, sticky='w')
         self.button_load.grid(row=0, column=1, sticky='w')
         # grid
-        self.treeview.grid(row=1, column=0, columnspan=2, pady=20, padx=10, sticky='nswe')
+        self.notebook.grid(row=1, column=0, columnspan=2, pady=20, padx=10, sticky='nswe')
+        self.treeview.grid(row=0, column=0, sticky='nswe')
         self.treeview.grid_remove()  # hide treeview
         self.treeview_scrollbar_vertical.grid(row=1, column=2, sticky='ns')
         self.treeview_scrollbar_horizontal.grid(row=2, column=0, columnspan=2, sticky='we')
@@ -68,6 +74,7 @@ class MainWindow(tk.Frame):
         self.btn_frame.columnconfigure(0, weight=0)
         self.btn_frame.columnconfigure(1, weight=0)
         self.btn_frame.columnconfigure(1, weight=1)
+        self.frame_preview.columnconfigure(0, weight=1)
 
         # configure rows
         self.parent.rowconfigure(0, weight=0)
@@ -77,6 +84,7 @@ class MainWindow(tk.Frame):
         self.parent.rowconfigure(4, weight=0)
         self.parent.rowconfigure(5, weight=0)
         self.btn_frame.rowconfigure(0, weight=1)
+        self.frame_preview.rowconfigure(0, weight=1)
 
     def show_item(self, event: None):
         #get selected line in treeview
