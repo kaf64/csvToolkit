@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog
 from csv_reader import CsvReader
 from csv_writer import CsvWriter
 from edit_window import EditWindow
+import pandas as pd
 
 
 class MainWindow(tk.Frame):
@@ -10,7 +11,6 @@ class MainWindow(tk.Frame):
         super().__init__(parent)
         self.parent = parent
         self.data = None
-        self.columns = list()
         self.reader = CsvReader()
         self.writer = CsvWriter()
         self.init_window()
@@ -89,10 +89,11 @@ class MainWindow(tk.Frame):
     def show_item(self, event: None):
         #get selected line in treeview
         selected_item = self.treeview.focus()
+        index = self.treeview.index(selected_item)
         if selected_item is not None and len(selected_item) >= 1 and self.edit_window is None:
             # make dictionary from columns and values
             values = self.treeview.item(selected_item)['values']
-            item_content = self.data[int(selected_item)]
+            item_content = self.data.iloc[index].to_dict()
             # init and show new window
             self.edit_window = EditWindow(
                 parent=self.parent, content=item_content.copy(), external_fn=self.update_item, iid=selected_item)
@@ -108,9 +109,9 @@ class MainWindow(tk.Frame):
             elif user_decision is True:
                 new_values_list = self.edit_window.get_values()
                 iid = self.edit_window.get_iid()
-                self.update_item(self.data[int(iid)], new_values_list, iid)
-            self.edit_window.destroy()
-            self.edit_window = None
+                self.update_item(self.data.iloc[iid], new_values_list, iid)
+        self.edit_window.destroy()
+        self.edit_window = None
 
     def update_item(self, local_values, new_values, index):
         for key, val in new_values.items():
@@ -129,45 +130,42 @@ class MainWindow(tk.Frame):
         self.parent.title("CSV Toolkit - " + str(file_path))
         self.update()
         res = self.reader.read(delimiter, file_path)
-        self.data = res['data']
-        self.columns = res['keys']
-        self.load_to_treeview(self.data)
+        self.data = res
+        self.load_to_treeview(content=self.data, columns=self.data.columns)
 
     def save_data(self) -> None:
         filetypes = [("csv files", "*.csv")]
         file_path = filedialog.asksaveasfilename(title='save file', filetypes=filetypes, defaultextension=".csv")
         delimiter = self.delimiter_entry.get()
         self.progress_label.config(text=f'saving item ...')
-        self.writer.write(file_path=file_path, data=self.data, columns=self.columns)
+        self.writer.write(file_path=file_path, data=self.data)
         self.progress_label.config(text=f'file saved')
+
+    def load_to_treeview(self, content: pd.DataFrame, columns=pd.Index) -> None:
+        if columns is not None:
+            self.treeview['columns'] = list(columns)
+            for col in columns:
+                self.treeview.heading(col, text=col, anchor='center')
+            # delete children if exists
+            if self.treeview.get_children():
+                self.treeview.delete(*self.treeview.get_children())
+            data_length = len(content)
+            for index, row in content.iterrows():
+                val_list = row.tolist()
+                #self.get_dict_to_list(data_item)
+                #self.treeview.insert(parent='', index=tk.END, text='', values=val_list)
+                self.treeview.insert(parent='', index=tk.END, iid=index, text='', values=val_list)
+            self.progress_label.config(text='loading complete')
+            self.treeview_scrollbar_vertical.grid(row=1, column=4, rowspan=4, stick='nse')
+            #self.update()
+            self.treeview.grid()  # show treeview
+
+        else:
+            self.progress_label.config(text='file is empty')
 
     def get_dict_to_list(self, dictionary: dict) -> list:
         res = list()
         for key, val in dictionary.items():
             res.append(val)
         return res
-
-    def load_to_treeview(self, content: dict) -> None:
-        key_list = self.columns
-        if key_list is not None:
-            self.columns = list(key_list)
-            self.treeview['columns'] = self.columns
-            for key in key_list:
-                self.treeview.heading(key, text=key, anchor='center')
-            # delete children if exists
-            if self.treeview.get_children():
-                self.treeview.delete(*self.treeview.get_children())
-            data_length = len(content)
-            self.treeview.grid()  # show treeview
-            for index, data_item in enumerate(content):
-                val_list = self.get_dict_to_list(data_item)
-                self.treeview.insert(parent='', index=tk.END, iid=index, text='', values=val_list)
-                self.progress_label.config(text=f'loading items: {index+1}/{data_length}')
-            self.progress_label.config(text='loading complete')
-            self.treeview_scrollbar_vertical.grid(row=1, column=4, rowspan=4, stick='nse')
-            self.update()
-        else:
-            self.progress_label.config(text='file is empty')
-
-
 

@@ -1,4 +1,4 @@
-import csv
+import pandas as pd
 
 
 class CsvReader:
@@ -12,15 +12,8 @@ class CsvReader:
     def set_delimiter(self, value):
         self.delimiter = value
 
-    def read(self, delimiter: str, file_path: str) -> dict:
-        res = dict()
-        data = list()
-        # init index dictionary
+    def read(self, delimiter: str, file_path: str) -> pd.DataFrame:
         with open(file_path, 'r', encoding=self.encoding) as file:
-            csv_reader = csv.DictReader(file, delimiter=delimiter)
-            for line in csv_reader:
-                data.append(line)
-            res['data'] = data
-            res['keys'] = csv_reader.fieldnames
-            return res
+            res = pd.read_csv(file, delimiter=delimiter)
+        return res
 

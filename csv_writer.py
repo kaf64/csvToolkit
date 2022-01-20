@@ -1,4 +1,4 @@
-import csv
+import pandas as pd
 
 
 class CsvWriter:
@@ -6,9 +6,5 @@ class CsvWriter:
         self.delimiter = ';'
         self.encoding = 'UTF-8'
 
-    def write(self, file_path: str, data: list, columns: list) -> None:
-        with open(file_path, 'w', encoding=self.encoding, newline='') as file:
-            csv_writer = csv.DictWriter(file, fieldnames=columns, delimiter=self.delimiter)
-            csv_writer.writeheader()
-            for line in data:
-                csv_writer.writerow(line)
+    def write(self, file_path: str, data: pd.DataFrame) -> None:
+        data.to_csv(path_or_buf=file_path, sep=self.delimiter, index=False)
