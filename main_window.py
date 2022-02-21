@@ -3,6 +3,8 @@ from tkinter import ttk, filedialog
 from csv_reader import CsvReader
 from csv_writer import CsvWriter
 from edit_window import EditWindow
+from frame.process_frame import ProcessFrame
+from frame.plot_frame import PlotFrame
 import pandas as pd
 
 
@@ -30,13 +32,19 @@ class MainWindow(tk.Frame):
         # init notebook widgets and frames
         self.notebook = ttk.Notebook(self.parent)
         self.frame_preview = ttk.Frame(self.notebook)
+        self.frame_plot = PlotFrame(self.notebook)
+        # adding frames to notebook
         self.notebook.add(self.frame_preview, text='Preview')
+        self.notebook.add(self.frame_plot, text='Plot')
+        # init widgets to preview frame
         self.delimiter_entry.insert('end', self.reader.get_delimiter())
         self.treeview = ttk.Treeview(self.frame_preview, show='headings')
         self.btn_frame = tk.Frame(self.parent)
         self.btn_show = tk.Button(self.btn_frame, command=lambda: self.show_item(None), text='Show/edit item')
         self.btn_save = tk.Button(self.btn_frame, command=self.save_data, text='Save file')
         self.progress_label = ttk.Label(self.parent, text='')
+        # init widgets to plot frame
+        self.btn_show = tk.Button(self.btn_frame, command=lambda: self.show_item(None), text='Show/edit item')
 
         # add scrollbar to treeview (horizontal and vertical)
         self.treeview_scrollbar_vertical = ttk.Scrollbar(self.parent, orient='vertical')
@@ -75,7 +83,6 @@ class MainWindow(tk.Frame):
         self.btn_frame.columnconfigure(1, weight=0)
         self.btn_frame.columnconfigure(1, weight=1)
         self.frame_preview.columnconfigure(0, weight=1)
-
         # configure rows
         self.parent.rowconfigure(0, weight=0)
         self.parent.rowconfigure(1, weight=1)
@@ -132,6 +139,7 @@ class MainWindow(tk.Frame):
         res = self.reader.read(delimiter, file_path)
         self.data = res
         self.load_to_treeview(content=self.data, columns=self.data.columns)
+        self.frame_plot.init_data(data=self.data)
 
     def save_data(self) -> None:
         filetypes = [("csv files", "*.csv")]
@@ -159,7 +167,6 @@ class MainWindow(tk.Frame):
             self.treeview_scrollbar_vertical.grid(row=1, column=4, rowspan=4, stick='nse')
             #self.update()
             self.treeview.grid()  # show treeview
-
         else:
             self.progress_label.config(text='file is empty')
 
