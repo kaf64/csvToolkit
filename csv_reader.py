@@ -14,6 +14,6 @@ class CsvReader:
 
     def read(self, delimiter: str, file_path: str) -> pd.DataFrame:
         with open(file_path, 'r', encoding=self.encoding) as file:
-            res = pd.read_csv(file, delimiter=delimiter)
+            res = pd.read_csv(file, delimiter=delimiter, header=0, index_col=False)
         return res
 

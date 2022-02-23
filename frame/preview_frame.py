@@ -99,6 +99,8 @@ class PreviewFrame(tk.Frame):
             local_values[key] = val
         # get treeview item do update
         item_to_update = self.treeview.index(index)
+        # update dataframe
+        self.data.loc[int(index), :] = new_values.values()
         # update treeivew item
         self.treeview.item(item_to_update, values=self.get_dict_to_list(local_values))
 
