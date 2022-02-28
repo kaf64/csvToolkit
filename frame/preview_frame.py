@@ -45,9 +45,24 @@ class PreviewFrame(tk.Frame):
         self.rowconfigure(0, weight=1)
         self.btn_frame.rowconfigure(0, weight=1)
 
+    def reset_treeview(self):
+        # destroy treeview and make new to prevent change width of widget
+        self.treeview.destroy()
+        self.treeview = ttk.Treeview(self, show='headings')
+        # bind function to double click event
+        self.treeview.bind("<Double-1>", self.show_item)
+        self.treeview.configure(yscrollcommand=self.treeview_scrollbar_vertical.set)
+        self.treeview_scrollbar_vertical.configure(command=self.treeview.yview)
+        # configure horizontal scrollbar
+        self.treeview.configure(xscrollcommand=self.treeview_scrollbar_horizontal.set)
+        self.treeview_scrollbar_horizontal.configure(command=self.treeview.xview)
+        self.treeview.grid(row=0, column=0, sticky='nswe')
+
     def init_data(self, data: pd.DataFrame) -> None:
         self.data = data
-        self.load_to_treeview(self.data)
+        if self.treeview is not None:
+            self.reset_treeview()
+            self.load_to_treeview(self.data)
         self.treeview.grid()  # show treeview
 
     def show_item(self, event: None):
@@ -80,19 +95,19 @@ class PreviewFrame(tk.Frame):
     def load_to_treeview(self, content: pd.DataFrame) -> None:
         columns = content.columns
         if columns is not None:
+            if self.treeview.get_children():
+                self.treeview.delete(*self.treeview.get_children())
             self.treeview['columns'] = list(columns)
             for col in columns:
                 self.treeview.heading(col, text=col, anchor='center')
             # delete children if exists
-            if self.treeview.get_children():
-                self.treeview.delete(*self.treeview.get_children())
-            data_length = len(content)
             for index, row in content.iterrows():
                 val_list = row.tolist()
                 self.treeview.insert(parent='', index=tk.END, iid=index, text='', values=val_list)
             self.progress_label.config(text='loading complete')
         else:
             self.progress_label.config(text='file is empty')
+        self.update()
 
     def update_item(self, local_values, new_values, index) -> None:
         for key, val in new_values.items():
