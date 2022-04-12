@@ -37,6 +37,11 @@ class PlotFrame(tk.Frame):
                                                      plot_type=self.var_style_interactive.get()))
         self.button_plot_interactive.grid(row=4, column=1)
 
+    def refresh_widgets(self):
+        column_list = self.data.columns.values.tolist()
+        self.listbox_x['values'] = column_list
+        self.listbox_y['values'] = column_list
+
     def init_graph_type_widgets(self):
         frame = tk.Frame(self)
         # static types

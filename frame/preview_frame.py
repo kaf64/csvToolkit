@@ -45,6 +45,12 @@ class PreviewFrame(tk.Frame):
         self.rowconfigure(0, weight=1)
         self.btn_frame.rowconfigure(0, weight=1)
 
+    def refresh_widgets(self):
+        if self.data is not None:
+            self.reset_treeview()
+            self.load_to_treeview(self.data)
+
+
     def reset_treeview(self):
         # destroy treeview and make new to prevent change width of widget
         self.treeview.destroy()

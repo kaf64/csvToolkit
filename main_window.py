@@ -41,6 +41,8 @@ class MainWindow(tk.Frame):
         self.notebook.add(self.frame_preview, text='Preview')
         self.notebook.add(self.frame_process, text='Process')
         self.notebook.add(self.frame_plot, text='Plot')
+        # bind event
+        self.notebook.bind("<<NotebookTabChanged>>", self.update_nbframe)
         # init widgets to preview frame
         self.delimiter_entry.insert('end', self.reader.get_delimiter())
 
@@ -68,6 +70,15 @@ class MainWindow(tk.Frame):
         self.parent.rowconfigure(3, weight=0)
         self.parent.rowconfigure(4, weight=0)
         self.parent.rowconfigure(5, weight=0)
+
+    def update_nbframe(self, *args) -> None:
+        selected_frame = self.notebook.index(self.notebook.select())
+        if selected_frame == 0:
+            self.frame_preview.refresh_widgets()
+        elif selected_frame == 1:
+            self.frame_process.refresh_widgets()
+        elif selected_frame == 2:
+            self.frame_plot.refresh_widgets()
 
     def open_file_dialog(self) -> None:
         filetypes = [("csv files", "*.csv")]
