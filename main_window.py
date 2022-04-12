@@ -4,6 +4,7 @@ from csv_reader import CsvReader
 from csv_writer import CsvWriter
 from frame.preview_frame import PreviewFrame
 from frame.plot_frame import PlotFrame
+from frame.process_frame import ProcessFrame
 import pandas as pd
 
 
@@ -34,9 +35,11 @@ class MainWindow(tk.Frame):
         # init notebook widgets and frames
         self.notebook = ttk.Notebook(self.parent)
         self.frame_preview = PreviewFrame(parent_progress_label=self.progress_label, parent=self.notebook)
-        self.frame_plot = PlotFrame(self.notebook)
+        self.frame_process = ProcessFrame(parent=self.notebook)
+        self.frame_plot = PlotFrame(parent=self.notebook)
         # adding frames to notebook
         self.notebook.add(self.frame_preview, text='Preview')
+        self.notebook.add(self.frame_process, text='Process')
         self.notebook.add(self.frame_plot, text='Plot')
         # init widgets to preview frame
         self.delimiter_entry.insert('end', self.reader.get_delimiter())
@@ -79,6 +82,7 @@ class MainWindow(tk.Frame):
 
     def load_widgets_data(self, content: pd.DataFrame) -> None:
         self.frame_preview.init_data(data=content)
+        self.frame_process.init_data(data=content)
         self.frame_plot.init_data(data=content)
 
     def save_data(self) -> None:
