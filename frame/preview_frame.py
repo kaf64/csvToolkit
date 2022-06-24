@@ -1,7 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
-from edit_window import EditWindow
-from classes.window.field_window import FieldWindow
+from tkinter import ttk
+from classes.window.edit_window import EditWindow
 import pandas as pd
 
 
