@@ -77,7 +77,6 @@ class ProcessFrame(tk.Frame):
     def delete_nan(self, column: str) -> None:
         self.data.dropna(inplace=True)
         self.refresh_widgets()
-        print(self.data)
 
     def replace_nan(self, column: str, new_value: str) -> None:
         if column.strip() is not None:
