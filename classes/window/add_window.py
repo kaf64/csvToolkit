@@ -46,6 +46,7 @@ class AddWindow(FieldWindow):
     def clear_fields(self):
         for key, val in self.local_values.items():
             val.set("")
+        self.is_content_changed = False
 
     def local_add_function(self):
         new_val = self.get_values()
