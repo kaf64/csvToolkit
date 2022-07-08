@@ -25,7 +25,6 @@ class FieldWindow(tk.Toplevel):
         self.main_canvas.bind("<Configure>", self.frame_width)
 
     # external function
-# dodać generowanie pól
     def organize_widgets(self):
         self.main_canvas.grid(row=0, column=0, sticky='nswe')
         self.btn_frame.grid(row=0, column=0, sticky='nw')
@@ -56,7 +55,6 @@ class FieldWindow(tk.Toplevel):
 
     def generate_field_in_frame(self, content):
         # load content to frame
-
         i = 1
         for key, value in self.content.items():
             column_name = key
