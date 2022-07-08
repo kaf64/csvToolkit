@@ -143,7 +143,7 @@ class PreviewFrame(tk.Frame):
         # update dataframe
         self.data.loc[int(index), :] = new_values.values()
         # update treeivew item
-        self.treeview.item(item_to_update, values=self.get_dict_to_list(local_values))
+        self.treeview.item(item_to_update, values=list(local_values.values()))
 
     def add_new_item_dialog(self) -> None:
         if self.data.columns is not None and self.edit_window is None:
@@ -165,8 +165,3 @@ class PreviewFrame(tk.Frame):
         # update treeview item
         self.refresh_widgets()
 
-    def get_dict_to_list(self, dictionary: dict) -> list:
-        res = list()
-        for key, val in dictionary.items():
-            res.append(val)
-        return res
