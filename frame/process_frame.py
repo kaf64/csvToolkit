@@ -40,7 +40,7 @@ class ProcessFrame(tk.Frame):
                                             new_value=self.entry_replace.get()),
                                         text='Replace empty values')
         self.btn_replace_nan.grid(row=2, column=0)
-        #widgets for adding new column
+        # widgets for adding new column
         self.label_add_col = tk.Label(frame_new_column, text='New column name:')
         self.label_add_col.grid(row=0, column=0)
         self.entry_add_col = tk.Entry(frame_new_column)

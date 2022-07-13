@@ -8,7 +8,6 @@ class AddWindow(FieldWindow):
         # function to save changes
         self.ext_function = external_fn
         super().__init__(parent, content=content)
-        #self.content = dict()
         self.content = content
         self.title('Add new item')
         self.btn_save = tk.Button(self.btn_frame, text='Add new item', command=self.local_add_function)

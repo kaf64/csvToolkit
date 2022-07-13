@@ -117,7 +117,6 @@ class PreviewFrame(tk.Frame):
                 self.edit_window.destroy()
                 self.edit_window = None
 
-
     def load_to_treeview(self, content: pd.DataFrame) -> None:
         columns = content.columns
         if columns is not None:
@@ -157,11 +156,7 @@ class PreviewFrame(tk.Frame):
 
     def add_new_item(self, new_values: dict) -> None:
         new_item = pd.Series(data=new_values.values(), index=self.data.columns)
-        # new_item.columns = self.data.columns
-        # for key, val in new_values.items():
-        #    new_item[key] = val
         self.data = pd.concat(objs=[self.data, new_item.to_frame().T], ignore_index=True)
-        #self.data.concat(new_item)
         # update treeview item
         self.refresh_widgets()
 
