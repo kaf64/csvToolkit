@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from classes.window.edit_window import EditWindow
 from classes.window.add_window import AddWindow
+from classes.window.add_column_window import AddColumnWindow
 import pandas as pd
 
 
@@ -12,6 +13,7 @@ class PreviewFrame(tk.Frame):
         self.data = None
         self.edit_window = None
         self.add_window = None
+        self.add_column_window = None
         self.progress_label = parent_progress_label
         # init widgets
         # treeview
@@ -24,6 +26,9 @@ class PreviewFrame(tk.Frame):
         self.btn_show = tk.Button(self.btn_frame, command=lambda: self.show_item(None), text='Show/edit item')
         # add new item btn
         self.btn_add = tk.Button(self.btn_frame, command=lambda: self.add_new_item_dialog(), text='Add new item')
+        # add new column btn
+        self.btn_add_column = tk.Button(self.btn_frame, command=lambda: self.add_new_column_dialog(),
+                                        text='Add new column')
         # add scrollbar to treeview (horizontal and vertical)
         self.treeview_scrollbar_vertical = ttk.Scrollbar(self, orient='vertical')
         self.treeview_scrollbar_horizontal = ttk.Scrollbar(self, orient='horizontal')
@@ -41,7 +46,7 @@ class PreviewFrame(tk.Frame):
         self.btn_frame.grid(row=3, column=0, columnspan=2, sticky='we')
         self.btn_show.grid(row=0, column=0, padx=10, sticky='w')
         self.btn_add.grid(row=0, column=1, padx=10, sticky='w')
-
+        self.btn_add_column.grid(row=0, column=2, padx=10, sticky='w')
         # configure columns
         self.columnconfigure(0, weight=1)
         self.btn_frame.columnconfigure(0, weight=0)
@@ -116,6 +121,9 @@ class PreviewFrame(tk.Frame):
             elif window_type == "edit":
                 self.edit_window.destroy()
                 self.edit_window = None
+            elif window_type == 'add_column':
+                self.add_column_window.destroy()
+                self.add_column_window = None
 
     def load_to_treeview(self, content: pd.DataFrame) -> None:
         columns = content.columns
@@ -159,4 +167,22 @@ class PreviewFrame(tk.Frame):
         self.data = pd.concat(objs=[self.data, new_item.to_frame().T], ignore_index=True)
         # update treeview item
         self.refresh_widgets()
+
+    def add_new_column_dialog(self) -> None:
+        if self.data.columns is not None and self.add_column_window is not None:
+            # init and show new window
+            self.add_column_window = AddColumnWindow(
+                parent=self.parent, external_fn=self.add_new_column)
+            self.edit_window.protocol("WM_DELETE_WINDOW",
+                                      lambda: self.exit_dialog(window_type='add_column', active_window=None))
+
+    def add_new_column(self, new_column_name: str) -> None:
+        column_list = self.data.columns.to_list()
+        if new_column_name not in column_list and len(new_column_name) > 0 and new_column_name != ' ':
+            new_column = pd.Series([], name=new_column_name)
+            self.data = pd.concat([self.data, new_column], axis=1)
+            # update treeview item
+            self.refresh_widgets()
+
+
 
