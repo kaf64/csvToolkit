@@ -3,6 +3,7 @@ from tkinter import ttk
 from classes.window.edit_window import EditWindow
 from classes.window.add_window import AddWindow
 from classes.window.add_column_window import AddColumnWindow
+from classes.data_interface.data_interface import DataInterface
 import pandas as pd
 
 
@@ -10,7 +11,8 @@ class PreviewFrame(tk.Frame):
     def __init__(self, parent_progress_label=tk.Label, parent=tk.Tk):
         super().__init__(parent)
         self.parent = parent
-        self.data = None
+        self.data = pd.DataFrame()
+        self.data_interface = DataInterface()
         self.edit_window = None
         self.add_window = None
         self.add_column_window = None
@@ -39,7 +41,7 @@ class PreviewFrame(tk.Frame):
         self.treeview.configure(xscrollcommand=self.treeview_scrollbar_horizontal.set)
         self.treeview_scrollbar_horizontal.configure(command=self.treeview.xview)
         # organize widgets
-        self.treeview.grid(row=0, column=0, sticky='nswe')
+        self.treeview.grid(row=0, column=0, sticky='nsew')
         self.treeview.grid_remove()  # hide treeview
         self.treeview_scrollbar_vertical.grid(row=0, column=1, sticky='ns')
         self.treeview_scrollbar_horizontal.grid(row=1, column=0, sticky='we')
@@ -56,11 +58,11 @@ class PreviewFrame(tk.Frame):
         self.rowconfigure(0, weight=1)
         self.btn_frame.rowconfigure(0, weight=1)
 
-    def refresh_widgets(self):
+    def refresh_widgets(self, *args):
+        print('refreshing widgets')
         if self.data is not None:
             self.reset_treeview()
             self.load_to_treeview(self.data)
-
 
     def reset_treeview(self):
         # destroy treeview and make new to prevent change width of widget
@@ -73,10 +75,11 @@ class PreviewFrame(tk.Frame):
         # configure horizontal scrollbar
         self.treeview.configure(xscrollcommand=self.treeview_scrollbar_horizontal.set)
         self.treeview_scrollbar_horizontal.configure(command=self.treeview.xview)
-        self.treeview.grid(row=0, column=0, sticky='nswe')
+        self.treeview.grid(row=0, column=0, sticky='nsew')
 
     def init_data(self, data: pd.DataFrame) -> None:
         self.data = data
+        self.data_interface.init_data(data_to_init=self.data)
         if self.treeview is not None:
             self.reset_treeview()
             self.load_to_treeview(self.data)
@@ -92,9 +95,10 @@ class PreviewFrame(tk.Frame):
             item_content = self.data.iloc[index].to_dict()
             # init and show new window
             self.edit_window = EditWindow(
-                parent=self.parent, content=item_content.copy(), external_fn=self.update_item, iid=selected_item)
+                parent=self.parent, content=item_content.copy(), iid=selected_item, data_interface=self.data_interface)
             self.edit_window.protocol("WM_DELETE_WINDOW",
                                       lambda: self.exit_dialog(window_type='edit', active_window=self.edit_window))
+            self.edit_window.bind("<<DataUpdate>>", self.refresh_widgets)
 
     def exit_dialog(self, window_type: str, active_window) -> None:
         if window_type == "edit":
@@ -142,47 +146,36 @@ class PreviewFrame(tk.Frame):
             self.progress_label.config(text='file is empty')
         self.update()
 
-    def update_item(self, local_values, new_values, index) -> None:
-        for key, val in new_values.items():
-            local_values[key] = val
-        # get treeview item do update
-        item_to_update = self.treeview.index(index)
+    def update_item(self, new_values, index) -> None:
         # update dataframe
         self.data.loc[int(index), :] = new_values.values()
-        # update treeivew item
-        self.treeview.item(item_to_update, values=list(local_values.values()))
+
+    def update_treeview_item(self, index, new_values):
+        # update treeview item
+        item_to_update = self.treeview.index(index)
+        self.treeview.item(item_to_update, values=list(new_values))
 
     def add_new_item_dialog(self) -> None:
-        if self.data.columns is not None and self.edit_window is None:
+        if self.data.columns is not None and self.add_window is None:
             # make dictionary from columns and values
             item_content = {column: " " for column in self.data.columns}
             # init and show new window
             self.add_window = AddWindow(
-                parent=self.parent, external_fn=self.add_new_item, content=item_content)
+                parent=self.parent, data_interface=self.data_interface, content=item_content)
             self.add_window.protocol("WM_DELETE_WINDOW",
                                      lambda: self.exit_dialog(window_type='add', active_window=self.add_window))
-
-    def add_new_item(self, new_values: dict) -> None:
-        new_item = pd.Series(data=new_values.values(), index=self.data.columns)
-        self.data = pd.concat(objs=[self.data, new_item.to_frame().T], ignore_index=True)
-        # update treeview item
-        self.refresh_widgets()
+            self.add_window.bind("<<DataUpdate>>", self.refresh_widgets)
 
     def add_new_column_dialog(self) -> None:
-        if self.data.columns is not None and self.add_column_window is not None:
+        if self.data.columns is not None and self.add_column_window is None:
             # init and show new window
             self.add_column_window = AddColumnWindow(
-                parent=self.parent, external_fn=self.add_new_column)
-            self.edit_window.protocol("WM_DELETE_WINDOW",
+                parent=self.parent, data_interface=self.data_interface)
+            self.add_column_window.protocol("WM_DELETE_WINDOW",
                                       lambda: self.exit_dialog(window_type='add_column', active_window=None))
+            self.add_column_window.bind("<<DataUpdate>>", self.refresh_widgets)
 
-    def add_new_column(self, new_column_name: str) -> None:
-        column_list = self.data.columns.to_list()
-        if new_column_name not in column_list and len(new_column_name) > 0 and new_column_name != ' ':
-            new_column = pd.Series([], name=new_column_name)
-            self.data = pd.concat([self.data, new_column], axis=1)
-            # update treeview item
-            self.refresh_widgets()
+
 
 
 

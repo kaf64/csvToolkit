@@ -1,10 +1,12 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 
 
 class FieldWindow(tk.Toplevel):
     def __init__(self, parent: tk.Tk, content: dict) -> None:
         super().__init__(parent)
+        self.content = content
+        self.is_content_changed = False
         self.main_canvas = tk.Canvas(self, borderwidth=0)
         # init list of local values StringVars type
         self.local_values = dict()
@@ -24,11 +26,10 @@ class FieldWindow(tk.Toplevel):
         self.main_frame.bind("<Configure>", self.on_frame_configure)
         self.main_canvas.bind("<Configure>", self.frame_width)
 
-    # external function
     def organize_widgets(self):
-        self.main_canvas.grid(row=0, column=0, sticky='nswe')
+        self.main_canvas.grid(row=0, column=0, sticky='nsew')
         self.btn_frame.grid(row=0, column=0, sticky='nw')
-        self.scrollbar_vertical.grid(row=0, column=1, sticky='nswe')
+        self.scrollbar_vertical.grid(row=0, column=1, sticky='nsew')
         self.scrollbar_horizontal.grid(row=1, column=0, columnspan=2, sticky='we')
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
@@ -42,8 +43,8 @@ class FieldWindow(tk.Toplevel):
         self.btn_frame.columnconfigure(0, weight=1)
         self.btn_frame.columnconfigure(1, weight=1)
 
-    def on_frame_configure(self, event) -> None:
-        '''Reset the scroll region to include whole inner frame'''
+    def on_frame_configure(self, *event) -> None:
+        # Reset the scroll region to include whole inner frame
         self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all"))
 
     def frame_width(self, event):
@@ -53,7 +54,11 @@ class FieldWindow(tk.Toplevel):
     def _on_mousewheel(self, event):
         self.main_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-    def generate_field_in_frame(self, content):
+    def value_changed(self, *args):
+        if self.is_content_changed is False:
+            self.is_content_changed = True
+
+    def generate_field_in_frame(self):
         # load content to frame
         i = 1
         for key, value in self.content.items():

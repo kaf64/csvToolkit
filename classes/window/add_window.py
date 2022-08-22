@@ -1,12 +1,11 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
 from classes.window.field_window import FieldWindow
 
 
 class AddWindow(FieldWindow):
-    def __init__(self, parent: tk.Tk, external_fn, content: dict) -> None:
+    def __init__(self, parent: tk.Tk, data_interface, content: dict) -> None:
         # function to save changes
-        self.ext_function = external_fn
+        self.data_interface = data_interface
         super().__init__(parent, content=content)
         self.content = content
         self.title('Add new item')
@@ -28,19 +27,6 @@ class AddWindow(FieldWindow):
         for key, val in self.local_values.items():
             res[key] = val.get()
         return res
-        dict_val = None
-        dict_key = None
-        for dictionary in self.local_values:
-            for key, value in dictionary.items():
-                if key == 'column_name':
-                    dict_key = value
-                elif key == 'value':
-                    dict_val = value.get()
-                if dict_key and dict_val:
-                    res[dict_key] = dict_val
-                    dict_val = None
-                    dict_key = None
-        return res
 
     def clear_fields(self):
         for key, val in self.local_values.items():
@@ -49,15 +35,14 @@ class AddWindow(FieldWindow):
 
     def local_add_function(self):
         new_val = self.get_values()
-        self.ext_function(new_val)
+        self.data_interface.add_new_item(new_val)
+        self.event_generate('<<DataUpdate>>')
         self.clear_fields()
         self.is_content_changed = False
 
-    def value_changed(self, *args):
-        if self.is_content_changed is False:
-            self.is_content_changed = True
+    # def value_changed(self, *args):
+    #    if self.is_content_changed is False:
+    #        self.is_content_changed = True
 
     def get_is_content_changed(self):
         return self.is_content_changed
-
-
