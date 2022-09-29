@@ -1,7 +1,12 @@
 # csvToolkit
 Simple project to handle and present csv (comma separate values) files.
 ## Features
-With this program, you can preview, edit and save changes to csv files.
+With this program, you can preview, edit and save changes to csv files.  
+Feature list:
+- preview csv file as table view
+- add new and remove columns
+- add new rows
+- change row values
 ## Depencencies (libraries)
 Below each name of library is shown installation command using package installer for Python (pip):
 - [tkinter](https://docs.python.org/3/library/tkinter.html)
