@@ -3,6 +3,7 @@ from tkinter import ttk
 from classes.window.edit_window import EditWindow
 from classes.window.add_window import AddWindow
 from classes.window.add_column_window import AddColumnWindow
+from classes.window.delete_column_window import DeleteColumnWindow
 from classes.data_interface.data_interface import DataInterface
 import pandas as pd
 
@@ -16,6 +17,7 @@ class PreviewFrame(tk.Frame):
         self.edit_window = None
         self.add_window = None
         self.add_column_window = None
+        self.delete_column_window = None
         self.progress_label = parent_progress_label
         # init widgets
         # treeview
@@ -31,6 +33,8 @@ class PreviewFrame(tk.Frame):
         # add new column btn
         self.btn_add_column = tk.Button(self.btn_frame, command=lambda: self.add_new_column_dialog(),
                                         text='Add new column')
+        self.btn_del_column = tk.Button(self.btn_frame, command=lambda: self.delete_column_dialog(),
+                                        text='Delete column')
         # add scrollbar to treeview (horizontal and vertical)
         self.treeview_scrollbar_vertical = ttk.Scrollbar(self, orient='vertical')
         self.treeview_scrollbar_horizontal = ttk.Scrollbar(self, orient='horizontal')
@@ -49,11 +53,13 @@ class PreviewFrame(tk.Frame):
         self.btn_show.grid(row=0, column=0, padx=10, sticky='w')
         self.btn_add.grid(row=0, column=1, padx=10, sticky='w')
         self.btn_add_column.grid(row=0, column=2, padx=10, sticky='w')
+        self.btn_del_column.grid(row=0, column=3, padx=10, sticky='w')
         # configure columns
         self.columnconfigure(0, weight=1)
         self.btn_frame.columnconfigure(0, weight=0)
         self.btn_frame.columnconfigure(1, weight=0)
-        self.btn_frame.columnconfigure(1, weight=1)
+        self.btn_frame.columnconfigure(2, weight=0)
+        self.btn_frame.columnconfigure(3, weight=1)
         # configure rows
         self.rowconfigure(0, weight=1)
         self.btn_frame.rowconfigure(0, weight=1)
@@ -175,6 +181,12 @@ class PreviewFrame(tk.Frame):
                                       lambda: self.exit_dialog(window_type='add_column', active_window=None))
             self.add_column_window.bind("<<DataUpdate>>", self.refresh_widgets)
 
+    def delete_column_dialog(self) -> None:
+        if self.data.columns is not None and self.delete_column_window is None:
+            # init and show new window
+            self.delete_column_window = DeleteColumnWindow(
+                parent=self.parent, data_interface=self.data_interface, columns=self.data.columns.to_list())
+            self.delete_column_window.bind("<<DataUpdate>>", self.refresh_widgets)
 
 
 
