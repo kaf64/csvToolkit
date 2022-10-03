@@ -5,7 +5,7 @@ With this program, you can preview, edit and save changes to csv files.
 Feature list:
 - preview csv file as table view
 - add new and remove columns
-- add new rows
+- add new and remove rows
 - change row values
 ## Depencencies (libraries)
 Below each name of library is shown installation command using package installer for Python (pip):
