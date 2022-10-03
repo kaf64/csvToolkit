@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
 from classes.window.edit_window import EditWindow
 from classes.window.add_window import AddWindow
@@ -35,6 +36,8 @@ class PreviewFrame(tk.Frame):
                                         text='Add new column')
         self.btn_del_column = tk.Button(self.btn_frame, command=lambda: self.delete_column_dialog(),
                                         text='Delete column')
+        self.btn_del_row = tk.Button(self.btn_frame, command=lambda: self.delete_item(),
+                                        text='Delete selected row(s)')
         # add scrollbar to treeview (horizontal and vertical)
         self.treeview_scrollbar_vertical = ttk.Scrollbar(self, orient='vertical')
         self.treeview_scrollbar_horizontal = ttk.Scrollbar(self, orient='horizontal')
@@ -54,12 +57,15 @@ class PreviewFrame(tk.Frame):
         self.btn_add.grid(row=0, column=1, padx=10, sticky='w')
         self.btn_add_column.grid(row=0, column=2, padx=10, sticky='w')
         self.btn_del_column.grid(row=0, column=3, padx=10, sticky='w')
+        self.btn_del_row.grid(row=0, column=4, padx=10, sticky='w')
         # configure columns
         self.columnconfigure(0, weight=1)
         self.btn_frame.columnconfigure(0, weight=0)
         self.btn_frame.columnconfigure(1, weight=0)
         self.btn_frame.columnconfigure(2, weight=0)
-        self.btn_frame.columnconfigure(3, weight=1)
+        self.btn_frame.columnconfigure(3, weight=0)
+        self.btn_frame.columnconfigure(4, weight=0)
+        self.btn_frame.columnconfigure(5, weight=1)
         # configure rows
         self.rowconfigure(0, weight=1)
         self.btn_frame.rowconfigure(0, weight=1)
@@ -188,6 +194,23 @@ class PreviewFrame(tk.Frame):
                 parent=self.parent, data_interface=self.data_interface, columns=self.data.columns.to_list())
             self.delete_column_window.bind("<<DataUpdate>>", self.refresh_widgets)
 
+    def delete_item(self) -> None:
+        # get selected row in treeview
+        selected_item = self.treeview.selection()
+        if selected_item is not None:
+            message = "Are you sure to delete selected row(s)?"
+            user_decision = tk.messagebox.askyesnocancel(parent=self, title='close', message=message)
+            if user_decision is None or user_decision is False:
+                return
+            elif user_decision is True:
+                if len(selected_item) == 1:
+                    index = self.treeview.index(selected_item)
+                    self.data_interface.delete_item(index=index)
+                elif len(selected_item) >= 2:
+                    for index_item in selected_item:
+                        index = self.treeview.index(index_item)
+                        self.data_interface.delete_item(index=index)
+                self.refresh_widgets()
 
 
 

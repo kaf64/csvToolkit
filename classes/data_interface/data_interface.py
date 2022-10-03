@@ -24,3 +24,7 @@ class DataInterface:
 
     def update_item(self, index, new_values):
         self.data.iloc[int(index), :] = pd.Series(new_values.values())
+
+    def delete_item(self, index):
+        if index in self.data.index:
+            self.data.drop(inplace=True, index=index)
