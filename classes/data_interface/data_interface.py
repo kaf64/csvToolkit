@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -28,3 +29,10 @@ class DataInterface:
     def delete_item(self, index):
         if index in self.data.index:
             self.data.drop(inplace=True, index=index)
+
+    def find_value(self, value):
+        mask = np.column_stack([self.data[col].astype(str).str.contains(value, case=False, na=False)
+                                for col in self.data])
+        res = self.data.loc[mask.any(axis=1)]
+        return res
+

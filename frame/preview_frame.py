@@ -27,6 +27,8 @@ class PreviewFrame(tk.Frame):
         self.treeview.bind("<Double-1>", self.show_item)
         # button frame
         self.btn_frame = tk.Frame(self)
+        # search bar frame
+        self.search_frame = tk.Frame(self)
         # show edit item btn
         self.btn_show = tk.Button(self.btn_frame, command=lambda: self.show_item(None), text='Show/edit item')
         # add new item btn
@@ -38,6 +40,12 @@ class PreviewFrame(tk.Frame):
                                         text='Delete column')
         self.btn_del_row = tk.Button(self.btn_frame, command=lambda: self.delete_item(),
                                         text='Delete selected row(s)')
+        # create widgets to search frame
+        self.search_label = tk.Label(self.search_frame, text="Value to search: ")
+        self.search_entry = tk.Entry(self.search_frame)
+        self.search_entry.bind("<Return>", lambda event=None: self.search_btn_start.invoke())
+        self.search_btn_start = tk.Button(self.search_frame, command=lambda: self.search_start(), text='Start search')
+        self.search_btn_reset = tk.Button(self.search_frame, command=lambda: self.search_reset(), text='Reset search')
         # add scrollbar to treeview (horizontal and vertical)
         self.treeview_scrollbar_vertical = ttk.Scrollbar(self, orient='vertical')
         self.treeview_scrollbar_horizontal = ttk.Scrollbar(self, orient='horizontal')
@@ -48,11 +56,16 @@ class PreviewFrame(tk.Frame):
         self.treeview.configure(xscrollcommand=self.treeview_scrollbar_horizontal.set)
         self.treeview_scrollbar_horizontal.configure(command=self.treeview.xview)
         # organize widgets
-        self.treeview.grid(row=0, column=0, sticky='nsew')
+        self.search_frame.grid(row=0, column=0, sticky='we')
+        self.search_label.grid(row=0, column=0, sticky='w')
+        self.search_entry.grid(row=0, column=1, sticky='we')
+        self.search_btn_start.grid(row=0, column=3, sticky='e')
+        self.search_btn_reset.grid(row=0, column=4, sticky='e')
+        self.treeview.grid(row=1, column=0, sticky='nsew')
         self.treeview.grid_remove()  # hide treeview
-        self.treeview_scrollbar_vertical.grid(row=0, column=1, sticky='ns')
-        self.treeview_scrollbar_horizontal.grid(row=1, column=0, sticky='we')
-        self.btn_frame.grid(row=3, column=0, columnspan=2, sticky='we')
+        self.treeview_scrollbar_vertical.grid(row=1, column=1, sticky='ns')
+        self.treeview_scrollbar_horizontal.grid(row=2, column=0, sticky='we')
+        self.btn_frame.grid(row=4, column=0, columnspan=2, sticky='we')
         self.btn_show.grid(row=0, column=0, padx=10, sticky='w')
         self.btn_add.grid(row=0, column=1, padx=10, sticky='w')
         self.btn_add_column.grid(row=0, column=2, padx=10, sticky='w')
@@ -60,6 +73,10 @@ class PreviewFrame(tk.Frame):
         self.btn_del_row.grid(row=0, column=4, padx=10, sticky='w')
         # configure columns
         self.columnconfigure(0, weight=1)
+        self.search_frame.columnconfigure(0, weight=0)
+        self.search_frame.columnconfigure(1, weight=1)
+        self.search_frame.columnconfigure(2, weight=0)
+        self.search_frame.columnconfigure(3, weight=0)
         self.btn_frame.columnconfigure(0, weight=0)
         self.btn_frame.columnconfigure(1, weight=0)
         self.btn_frame.columnconfigure(2, weight=0)
@@ -67,8 +84,10 @@ class PreviewFrame(tk.Frame):
         self.btn_frame.columnconfigure(4, weight=0)
         self.btn_frame.columnconfigure(5, weight=1)
         # configure rows
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(0, weight=0)
+        self.rowconfigure(1, weight=1)
         self.btn_frame.rowconfigure(0, weight=1)
+        self.search_frame.rowconfigure(0, weight=1)
 
     def refresh_widgets(self, *args):
         print('refreshing widgets')
@@ -87,7 +106,7 @@ class PreviewFrame(tk.Frame):
         # configure horizontal scrollbar
         self.treeview.configure(xscrollcommand=self.treeview_scrollbar_horizontal.set)
         self.treeview_scrollbar_horizontal.configure(command=self.treeview.xview)
-        self.treeview.grid(row=0, column=0, sticky='nsew')
+        self.treeview.grid(row=1, column=0, sticky='nsew')
 
     def init_data(self, data: pd.DataFrame) -> None:
         self.data = data
@@ -95,7 +114,7 @@ class PreviewFrame(tk.Frame):
         if self.treeview is not None:
             self.reset_treeview()
             self.load_to_treeview(self.data)
-        self.treeview.grid()  # show treeview
+        #self.treeview.grid()  # show treeview
 
     def show_item(self, event: None):
         #get selected line in treeview
@@ -212,5 +231,16 @@ class PreviewFrame(tk.Frame):
                         self.data_interface.delete_item(index=index)
                 self.refresh_widgets()
 
+    def search_start(self):
+        value = self.search_entry.get()
+        if value != '' and self.data is not None:
+            result = self.data_interface.find_value(value=str(value))
+            self.reset_treeview()
+            self.load_to_treeview(content=result)
+
+    def search_reset(self):
+        self.search_entry.delete(0, tk.END)
+        self.reset_treeview()
+        self.load_to_treeview(content=self.data)
 
 
