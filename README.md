@@ -8,7 +8,10 @@ Feature list:
 - add new and remove rows
 - change row values
 - search values
-## Depencencies (libraries)
+- fill empty (NaN) values
+- delete rows with empty values
+- generate static and interactive plots
+## Dependencies (libraries)
 Below each name of library is shown installation command using package installer for Python (pip):
 - [tkinter](https://docs.python.org/3/library/tkinter.html)
 ```bash
