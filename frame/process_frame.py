@@ -69,10 +69,11 @@ class ProcessFrame(tk.Frame):
         self.refresh_widgets()
 
     def refresh_widgets(self):
-        list_container = self.data.columns.values.tolist()
-        self.list_del_col['values'] = list_container
-        list_container.append('all columns')
-        self.list_columns['values'] = list_container
+        if self.data is not None:
+            list_container = self.data.columns.values.tolist()
+            self.list_del_col['values'] = list_container
+            list_container.append('all columns')
+            self.list_columns['values'] = list_container
 
     def delete_nan(self, column: str) -> None:
         self.data.dropna(inplace=True)

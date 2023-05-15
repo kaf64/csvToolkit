@@ -90,7 +90,6 @@ class PreviewFrame(tk.Frame):
         self.search_frame.rowconfigure(0, weight=1)
 
     def refresh_widgets(self, *args):
-        print('refreshing widgets')
         if self.data is not None:
             self.reset_treeview()
             self.load_to_treeview(self.data)
