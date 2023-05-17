@@ -1,5 +1,5 @@
 # csvToolkit
-Simple project to handle and present csv (comma separate values) files.  
+Simple python project to handle and present csv (comma separate values) files.  
 Language: Python 3.11
 ## Features
 With this program, you can preview, edit and save changes to csv files.  
@@ -22,6 +22,10 @@ pip install tk
 ```bash
 pip install pandas
 ```
+- [plotly](https://plotly.com/python/)
+```bash
+pip install plotly
+```
 ## Usage
 1. Make sure that delimiter character is correct to particular file.  
 2. Click "open csv file" button and select csv file to open. After a while, content file should be visible in program.
@@ -29,6 +33,6 @@ pip install pandas
 1. To see specific item (row), select record and click "Show/edit item" button or double click LMB (left mouse button).
 2. To search value, enter the value next to label "Search:" and click "Start search" or press **Enter**. After a while,
    (when file is large) result will be shown below search bar.
-3. To clear result and back to whole file, press **Rest search** button.
+3. To clear result and back to whole file, press **Reset search** button.
 ## License
 Project is under [MIT License](LICENSE.md).
