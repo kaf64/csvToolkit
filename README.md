@@ -1,5 +1,6 @@
 # csvToolkit
-Simple project to handle and present csv (comma separate values) files.
+Simple project to handle and present csv (comma separate values) files.  
+Language: Python 3.11
 ## Features
 With this program, you can preview, edit and save changes to csv files.  
 Feature list:
